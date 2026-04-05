@@ -17,7 +17,6 @@ import {
 } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { PriorityBadge } from "@/components/tasks/priority-badge";
 import { useTaskStore } from "@/store/task-store";
 import { cn } from "@/lib/utils";
@@ -42,8 +41,8 @@ function Column({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex min-h-[440px] flex-1 flex-col rounded-2xl border border-white/10 bg-white/[0.02] p-3 transition-colors md:min-h-[520px]",
-        isOver && "border-primary/45 bg-primary/[0.06] ring-1 ring-primary/20"
+        "flex min-h-[440px] flex-1 flex-col rounded-lg border border-border/80 bg-card/30 p-3 transition-colors md:min-h-[520px]",
+        isOver && "border-primary/40 bg-primary/[0.04] ring-1 ring-primary/15"
       )}
     >
       <h3 className="mb-3 px-1 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -79,8 +78,8 @@ function TaskCard({ task }: { task: Task }) {
       {...listeners}
       {...attributes}
       className={cn(
-        "glass rounded-xl border border-white/10 p-3 text-left shadow-lg transition-shadow",
-        "cursor-grab active:cursor-grabbing hover:border-white/20",
+        "glass rounded-lg border border-border/80 p-3 text-left transition-colors",
+        "cursor-grab active:cursor-grabbing hover:border-border",
         isDragging && "opacity-40"
       )}
     >
@@ -107,7 +106,7 @@ export function KanbanBoard() {
       if (!res.ok) throw new Error();
       setTasks((await res.json()) as Task[]);
     } catch {
-      toast.error("Could not load board.");
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -170,7 +169,6 @@ export function KanbanBoard() {
       replaceTask(updated);
     } catch {
       replaceTask(prev);
-      toast.error("Could not move task.");
     }
   }
 
@@ -200,7 +198,7 @@ export function KanbanBoard() {
       </motion.div>
       <DragOverlay dropAnimation={null}>
         {active ? (
-          <div className="glass w-[260px] rounded-xl border border-primary/30 bg-white/[0.08] p-3 shadow-2xl shadow-black/50">
+          <div className="glass w-[260px] rounded-lg border border-primary/25 bg-card/90 p-3 shadow-lg">
             <TaskCardContent task={active} />
           </div>
         ) : null}

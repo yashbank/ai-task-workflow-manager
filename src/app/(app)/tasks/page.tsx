@@ -5,7 +5,6 @@ import type { Task } from "@prisma/client";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -29,7 +28,7 @@ export default function TasksPage() {
       const data = (await res.json()) as Task[];
       setTasks(data);
     } catch {
-      toast.error("Could not load tasks.");
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -57,9 +56,8 @@ export default function TasksPage() {
       const res = await fetch(`/api/tasks/${task.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
       removeTask(task.id);
-      toast.success("Task deleted.");
     } catch {
-      toast.error("Delete failed.");
+      await load();
     }
   }
 
@@ -72,13 +70,13 @@ export default function TasksPage() {
             Create, prioritize, and track work with due dates and statuses.
           </p>
         </div>
-        <Button onClick={openCreate} className="shrink-0 gap-2 shadow-lg shadow-primary/20">
+        <Button onClick={openCreate} className="shrink-0 gap-2 rounded-md font-medium">
           <Plus className="h-4 w-4" />
           New task
         </Button>
       </div>
 
-      <div className="glass overflow-hidden rounded-2xl">
+      <div className="glass overflow-hidden rounded-lg border border-border/80">
         {loading ? (
           <p className="p-10 text-center text-sm text-muted-foreground">Loading tasks…</p>
         ) : tasks.length === 0 ? (
@@ -87,14 +85,14 @@ export default function TasksPage() {
           </p>
         ) : (
           <ScrollArea className="h-[min(70vh,640px)]">
-            <div className="divide-y divide-white/10">
+            <div className="divide-y divide-border/80">
               {tasks.map((task, i) => (
                 <motion.div
                   key={task.id}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
-                  className="flex flex-col gap-4 p-5 transition-colors hover:bg-white/[0.02] sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-4 p-5 transition-colors hover:bg-muted/20 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
@@ -132,7 +130,7 @@ export default function TasksPage() {
         )}
       </div>
 
-      <Separator className="bg-white/10" />
+      <Separator className="bg-border/60" />
 
       <TaskDialog
         open={dialogOpen}
@@ -142,10 +140,8 @@ export default function TasksPage() {
         onSaved={(t) => {
           if (dialogMode === "create") {
             addTask(t);
-            toast.success("Task created.");
           } else {
             replaceTask(t);
-            toast.success("Task updated.");
           }
         }}
       />

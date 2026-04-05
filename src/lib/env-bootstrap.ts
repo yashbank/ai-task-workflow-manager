@@ -23,6 +23,13 @@ function ensureEnv() {
   if (process.env.OPENAI_API_KEY === undefined || process.env.OPENAI_API_KEY === null) {
     process.env.OPENAI_API_KEY = "";
   }
+  /* UI preview: skip login/JWT — set DISABLE_AUTH=false to re-enable auth */
+  if (process.env.DISABLE_AUTH === undefined || process.env.DISABLE_AUTH === "") {
+    process.env.DISABLE_AUTH = "true";
+  }
+  if (process.env.NEXT_PUBLIC_DISABLE_AUTH === undefined || process.env.NEXT_PUBLIC_DISABLE_AUTH === "") {
+    process.env.NEXT_PUBLIC_DISABLE_AUTH = process.env.DISABLE_AUTH;
+  }
 }
 
 ensureEnv();

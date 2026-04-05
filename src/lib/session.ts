@@ -1,13 +1,19 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth";
+import { getOrCreateDemoUserId } from "./demo-user";
 
 export async function getSession() {
   return getServerSession(authOptions);
 }
 
-export async function requireUserId() {
+export function isAuthDisabled() {
+  return process.env.DISABLE_AUTH === "true";
+}
+
+export async function requireUserId(): Promise<string | null> {
+  if (isAuthDisabled()) {
+    return getOrCreateDemoUserId();
+  }
   const session = await getServerSession(authOptions);
-  const id = session?.user?.id;
-  if (!id) return null;
-  return id;
+  return session?.user?.id ?? null;
 }

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2, Sparkles, ListPlus } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -20,10 +19,12 @@ export default function AiPlannerPage() {
   const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [hint, setHint] = useState<string | null>(null);
 
   async function runSuggest() {
+    setHint(null);
     if (!goal.trim()) {
-      toast.error("Describe your goal first.");
+      setHint("Add a short description of your goal.");
       return;
     }
     setLoading(true);
@@ -36,13 +37,16 @@ export default function AiPlannerPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error ?? "AI request failed.");
+        setHint(
+          typeof data.error === "string"
+            ? data.error
+            : "AI is unavailable. Add OPENAI_API_KEY in your environment to enable this feature."
+        );
         return;
       }
       setSuggestions(data.tasks ?? []);
-      toast.success("Suggestions ready.");
     } catch {
-      toast.error("Something went wrong.");
+      setHint("Request could not be completed. Try again later.");
     } finally {
       setLoading(false);
     }
@@ -50,6 +54,7 @@ export default function AiPlannerPage() {
 
   async function addAll() {
     if (suggestions.length === 0) return;
+    setHint(null);
     setAdding(true);
     try {
       const res = await fetch("/api/tasks/bulk", {
@@ -59,13 +64,12 @@ export default function AiPlannerPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error ?? "Could not add tasks.");
+        setHint(typeof data.error === "string" ? data.error : "Could not add tasks.");
         return;
       }
-      toast.success(`Added ${data.count} tasks.`);
       router.push("/tasks");
     } catch {
-      toast.error("Could not add tasks.");
+      setHint("Could not add tasks.");
     } finally {
       setAdding(false);
     }
@@ -76,18 +80,20 @@ export default function AiPlannerPage() {
       <div>
         <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">AI planner</h1>
         <p className="mt-2 text-muted-foreground">
-          Describe an outcome; we will propose concrete tasks with priorities. Review and add them in one click.
+          Describe an outcome; optional AI suggestions when an API key is configured.
         </p>
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass space-y-4 rounded-2xl p-6 md:p-8"
+        className="glass space-y-4 rounded-lg border border-border/80 p-6 md:p-8"
       >
         <div className="flex items-center gap-2 text-primary">
-          <Sparkles className="h-5 w-5" />
-          <span className="text-sm font-semibold uppercase tracking-wider">Suggest tasks for my goal</span>
+          <Sparkles className="h-5 w-5 opacity-90" strokeWidth={1.5} />
+          <span className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+            Goal
+          </span>
         </div>
         <div className="space-y-2">
           <Label htmlFor="goal">Your goal</Label>
@@ -96,11 +102,12 @@ export default function AiPlannerPage() {
             rows={4}
             value={goal}
             onChange={(e) => setGoal(e.target.value)}
-            placeholder="e.g. Launch a landing page for my product in two weeks, including copy, design, and analytics."
-            className="resize-none bg-white/5 text-base"
+            placeholder="e.g. Ship a landing page in two weeks."
+            className="resize-none border-border/80 bg-muted/20 text-base"
           />
         </div>
-        <Button onClick={runSuggest} disabled={loading} className="gap-2 shadow-lg shadow-primary/15">
+        {hint ? <p className="text-sm text-muted-foreground">{hint}</p> : null}
+        <Button onClick={runSuggest} disabled={loading} className="gap-2 rounded-md font-medium">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           {loading ? "Generating…" : "Generate tasks"}
         </Button>
@@ -110,21 +117,21 @@ export default function AiPlannerPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="glass rounded-2xl p-6 md:p-8"
+          className="glass rounded-lg border border-border/80 p-6 md:p-8"
         >
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-lg font-semibold">Suggested tasks</h2>
-            <Button variant="secondary" onClick={addAll} disabled={adding} className="gap-2">
+            <h2 className="text-lg font-semibold tracking-tight">Suggested tasks</h2>
+            <Button variant="secondary" onClick={addAll} disabled={adding} className="gap-2 rounded-md">
               {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <ListPlus className="h-4 w-4" />}
-              Add all to my tasks
+              Add all to tasks
             </Button>
           </div>
           <ScrollArea className="h-[min(50vh,420px)] pr-3">
-            <ul className="space-y-4">
+            <ul className="space-y-3">
               {suggestions.map((s, i) => (
                 <li
                   key={`${s.title}-${i}`}
-                  className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+                  className="rounded-lg border border-border/80 bg-muted/15 p-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <p className="font-medium leading-snug">{s.title}</p>
