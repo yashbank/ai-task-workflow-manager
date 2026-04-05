@@ -51,5 +51,5 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET ?? "build-time-placeholder-nextauth-secret-min-32-chars-required",
 };
