@@ -1,101 +1,83 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, KanbanSquare, Sparkles, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="mesh-bg relative min-h-screen overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(45,212,191,0.12),_transparent_50%)]" />
+      <header className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-8">
+        <div className="flex items-center gap-2">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/15 text-sm font-bold text-primary">
+            AI
+          </span>
+          <span className="text-sm font-semibold tracking-tight">Task &amp; Workflow</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" asChild>
+            <Link href="/login">Sign in</Link>
+          </Button>
+          <Button asChild className="shadow-lg shadow-primary/20">
+            <Link href="/register">Get started</Link>
+          </Button>
+        </div>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <main className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-8 md:pt-16">
+        <div className="max-w-3xl">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">SaaS productivity</p>
+          <h1 className="mt-4 text-4xl font-semibold leading-[1.1] tracking-tight text-foreground md:text-6xl md:leading-[1.05]">
+            AI Task &amp;{" "}
+            <span className="bg-gradient-to-r from-primary via-teal-200 to-accent bg-clip-text text-transparent">
+              Workflow Manager
+            </span>
+          </h1>
+          <p className="mt-6 text-lg text-muted-foreground md:text-xl">
+            Plan with AI, execute on a glassmorphism Kanban board, and ship with clarity. Built for teams who want a
+            premium dark experience without the clutter.
+          </p>
+          <div className="mt-10 flex flex-wrap gap-4">
+            <Button size="lg" asChild className="gap-2 shadow-xl shadow-primary/25">
+              <Link href="/register">
+                Start free <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="border-white/15 bg-white/5">
+              <Link href="/login">I have an account</Link>
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-20 grid gap-4 md:grid-cols-3">
+          {[
+            {
+              icon: Sparkles,
+              title: "AI task suggestions",
+              body: "Turn goals into prioritized tasks in seconds with structured JSON output.",
+            },
+            {
+              icon: KanbanSquare,
+              title: "Drag-and-drop Kanban",
+              body: "Move work across Todo, In Progress, and Done with smooth, tactile interactions.",
+            },
+            {
+              icon: Shield,
+              title: "Secure sessions",
+              body: "Credential auth with hashed passwords and JWT sessions via NextAuth.",
+            },
+          ].map((item, i) => (
+            <div
+              key={item.title}
+              className="glass rounded-2xl p-6 transition-transform hover:-translate-y-0.5 hover:border-white/20"
+              style={{ animationDelay: `${i * 80}ms` }}
+            >
+              <item.icon className="h-8 w-8 text-primary" />
+              <h3 className="mt-4 font-semibold">{item.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+            </div>
+          ))}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
